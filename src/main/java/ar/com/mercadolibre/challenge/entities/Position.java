@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "satelliteposition")
 public class Position implements Serializable {
@@ -53,15 +55,6 @@ public class Position implements Serializable {
 		return "Position [name=" + name + ", x=" + x + ", y=" + y + "]";
 	}
 
-	/**
-	 * Método para simplificar el uso de la librería Trilateración
-	 * 
-	 * @return Double[] con las coordenadas [x,y]
-	 */
-	public double[] positions() {
-		return new double[] { x, y };
-	}
-
 	public Float getX() {
 		return x;
 	}
@@ -78,6 +71,7 @@ public class Position implements Serializable {
 		this.y = y;
 	}
 
+	@JsonIgnore
 	public String getName() {
 		return name;
 	}

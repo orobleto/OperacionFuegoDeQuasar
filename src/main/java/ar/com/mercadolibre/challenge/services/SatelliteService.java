@@ -2,6 +2,7 @@ package ar.com.mercadolibre.challenge.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,7 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import ar.com.mercadolibre.challenge.entities.Position;
 import ar.com.mercadolibre.challenge.entities.Satellite;
+import ar.com.mercadolibre.challenge.exceptions.SatelliteException;
 
 @Service
 public class SatelliteService {
@@ -19,7 +22,7 @@ public class SatelliteService {
 	 * Método para validar al Json y armar los objetos Satellite ver
 	 * {@link ar.com.mercadolibre.challenge.entities #Satellite}
 	 * 
-	 * @param satelliteRaw
+	 * @param satelliteRaw jsonBody del request
 	 * @return List de satelites
 	 */
 	public List<Satellite> validateRequestSatellite(String satelliteRaw) {
@@ -46,6 +49,32 @@ public class SatelliteService {
 		logger.info("Satellites[]:" + satellites);
 
 		return satellites;
+	}
+
+	/**
+	 * Método para validar los satelites que envian el mensaje
+	 * 
+	 * @param satellites Lista de los satelites que envian el mensaje
+	 * @param positions  posiciones de los satelites legales
+	 * @return boolean
+	 * @throws SatelliteException
+	 */
+
+	public boolean validateSatellites(List<Satellite> satellites, List<Position> positions) throws SatelliteException {
+		String message = "";
+		List<String> satellitesName = satellites.stream().map(e -> e.getName()).collect(Collectors.toList());
+		List<String> positionsName = positions.stream().map(e -> e.getName()).collect(Collectors.toList());
+		if (!positionsName.containsAll(satellitesName)) {
+			message = "Existe al menos un satelite que no esta en nuestra base de datos";
+			logger.error("Satellites[]:" + satellitesName + "Positions[]:" + positionsName + " " + message);
+			throw new SatelliteException(message);
+		} else if (satellitesName.size() > positionsName.size()) {
+			message = "Existe al menos un satelite que envio dos mensajes";
+			logger.error("Satellites[]:" + satellitesName + "Positions[]:" + positionsName + " " + message);
+			throw new SatelliteException(message);
+		}
+
+		return true;
 	}
 
 }

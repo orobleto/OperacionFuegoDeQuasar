@@ -33,7 +33,7 @@ public class MessageService {
 	 * @return boolean
 	 * @throws MessageException
 	 */
-	public boolean validateMessage(List<List<String>> messages) throws MessageException {
+	private boolean validateMessage(List<List<String>> messages) throws MessageException {
 		String errorMessage = "";
 		if (null == messages || messages.isEmpty()) {
 			errorMessage = "No existe un mensaje";
@@ -57,7 +57,7 @@ public class MessageService {
 	 * @param messages Lista con los arreglos de los mensajes de los satelites
 	 * @return boolean
 	 */
-	public boolean equalLength(List<List<String>> messages) {
+	private boolean equalLength(List<List<String>> messages) {
 		Set<Integer> lengths = new HashSet<>();
 		messages.forEach(e -> {
 			lengths.add(e.size());
@@ -72,7 +72,7 @@ public class MessageService {
 	 * @return Map
 	 * @throws MessageException
 	 */
-	public Map<Integer, String> messageStructure(List<List<String>> messages) throws MessageException {
+	private Map<Integer, String> messageStructure(List<List<String>> messages) throws MessageException {
 		Map<Integer, String> structure = new TreeMap<>();
 		String errorMessage = "";
 		for (List<String> e : messages) {

@@ -1,23 +1,44 @@
 package ar.com.mercadolibre.challenge.services;
 
+import java.util.List;
+import java.util.ListIterator;
+import java.util.stream.Collectors;
+
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
 
 import ar.com.mercadolibre.challenge.entities.Position;
+import ar.com.mercadolibre.challenge.entities.Satellite;
 import ar.com.mercadolibre.challenge.exceptions.LocationException;
 
+@Service
 public class LocationService {
 	private Logger logger = LogManager.getLogger(getClass());
 
-	public Position getLocation(double[][] positions, double[] distances) throws LocationException {
+	public Position getLocation(List<Position> positions, List<Satellite> satellites) throws LocationException {
 		Position position = null;
-		if (validaLocation(positions, distances)) {
+
+		List<String> names = satellites.stream().map(e -> e.getName()).collect(Collectors.toList());
+
+		ListIterator<Position> positionsEvaluate = positions.listIterator();
+		while (positionsEvaluate.hasNext()) {
+			Position positionAux = positionsEvaluate.next();
+			if (!names.contains(positionAux.getName())) {
+				positionsEvaluate.remove();
+			}
+		}
+
+		double[][] positionsArray = transformToPositions(positions);
+		double[] distancesArray = transformToDistances(satellites);
+
+		if (validaLocation(positionsArray, distancesArray)) {
 			NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(
-					new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
+					new TrilaterationFunction(positionsArray, distancesArray), new LevenbergMarquardtOptimizer());
 			double[] points = solver.solve().getPoint().toArray();
 			Float[] coordinates = new Float[points.length];
 
@@ -31,6 +52,39 @@ public class LocationService {
 	}
 
 	/**
+	 * Método para transformar a una matriz las posiciones de los satelites
+	 * 
+	 * @param positions lista de posiciones
+	 * @return double[][] posiciones
+	 */
+	private double[][] transformToPositions(List<Position> positions) {
+		double[][] positionsArray = new double[positions.size()][2];
+
+		for (int i = 0; i < positions.size(); i++) {
+			positionsArray[i][0] = positions.get(i).getX();
+			positionsArray[i][1] = positions.get(i).getY();
+		}
+
+		return positionsArray;
+	}
+
+	/**
+	 * Método para transformar a un arreglo las distancias de los mensaje
+	 * 
+	 * @param satellites
+	 * @return double[] distancias
+	 */
+	private double[] transformToDistances(List<Satellite> satellites) {
+		double[] distancesArray = new double[satellites.size()];
+
+		for (int i = 0; i < satellites.size(); i++) {
+			distancesArray[i] = satellites.get(i).getDistance();
+		}
+
+		return distancesArray;
+	}
+
+	/**
 	 * Método para validar que los arreglos poseean la longitud correcta para
 	 * analizarlos
 	 * 
@@ -39,7 +93,7 @@ public class LocationService {
 	 * @return boolean
 	 * @throws LocationException
 	 */
-	public boolean validaLocation(double[][] positions, double[] distances) throws LocationException {
+	private boolean validaLocation(double[][] positions, double[] distances) throws LocationException {
 		String errorMessage = "";
 		if (null == positions || positions.length == 0 || null == distances || distances.length == 0) {
 			errorMessage = "No deben estar vacias las posiciones ni la distancias";
@@ -50,7 +104,7 @@ public class LocationService {
 			logger.error(errorMessage);
 			throw new LocationException(errorMessage);
 		} else if (distances.length != positions.length) {
-			errorMessage = "Cada posicion debe poseer su distancia para poder evaluarla [posicion:" + positions.length
+			errorMessage = "Cada posicion debe poseer su distancia para poder evaluar la [posicion:" + positions.length
 					+ " ,distancia" + distances.length + "]";
 			logger.error(errorMessage);
 			throw new LocationException(errorMessage);
