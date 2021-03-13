@@ -11,8 +11,8 @@
 	</parent>
 	<groupId>ar.com.mercadolibre.challenge</groupId>
 	<artifactId>OperacionFuegoDeQuasar</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>OperacionFuegoDeQuasar</name>
+	<version>0.0.3-SNAPSHOT</version>
+	<name>operacionfuegodequasarmeli</name>
 	<description>Challenge MELI</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,29 +62,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.github.jsimone</groupId>
-									<artifactId>webapp-runner</artifactId>
-									<version>8.5.31.0</version>
-									<destFileName>webapp-runner.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
+
 
 </project>
