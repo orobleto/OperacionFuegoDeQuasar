@@ -1,6 +1,6 @@
 # Desafio Mercado Libre
 
-###Operación Fuego de Quasar
+### Operación Fuego de Quasar
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Star_Wars_Logo.svg/1024px-Star_Wars_Logo.svg.png)
 
 ## Tecnologias Utilizadas 🛠️
@@ -22,6 +22,7 @@
 
 
 ## Importante 📢
+La aplicación ha sido desactivada del servidor Heroku.
 La aplicación distingue mayúsculas y minúsculas por lo que deberán enviar los identificadores de satelites en UpperCamelCase:
 - Kenobi
 - Skywalker
